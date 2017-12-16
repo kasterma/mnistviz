@@ -46,3 +46,8 @@ def min_leq_bound(bd):
 assert(min_leq_bound(1.0) == 784)
 min_leq_bound(0.1)
 # 436: only 3 higher then the number of real zeros
+
+noise_image = np.random.uniform(0, 0.1, 28 * 28).reshape(28, 28)
+
+plt.imshow(mnist.train.images[15].reshape(28, 28) + noise_image, cmap=plt.cm.Greys)
+plt.show()
