@@ -68,3 +68,46 @@ for _ in range(200):
 
 plt.scatter(x[:,0], x[:,1])
 plt.show()
+
+sess = tf.Session()
+
+a = tf.constant([1, 2, 3])
+b = tf.constant([4, 5, 6, 7])
+
+tile_a = tf.tile(tf.expand_dims(a, 1), [1, tf.shape(b)[0]])
+tile_a = tf.expand_dims(tile_a, 2)
+tile_b = tf.tile(tf.expand_dims(b, 0), [tf.shape(a)[0], 1])
+tile_b = tf.expand_dims(tile_b, 2)
+
+cartesian_product = tf.concat([tile_a, tile_b], axis=2)
+
+cart = sess.run(cartesian_product)
+
+print(cart.shape)
+print(cart)
+
+pts = tf.Variable(initial_value=embedded_pts, name='pts')
+pts = tf.placeholder(name='pts')
+vinit = tf.variables_initializer([pts])
+sess.run(vinit)
+
+pts0 = tf.expand_dims(pts, axis=0)
+pts1 = tf.expand_dims(pts, axis=1)
+prods = tf.pow(tf.subtract(pts0, pts1), 2)
+dists = tf.sqrt(tf.reduce_sum(prods, axis=2))
+sess.run(dists)
+
+dists_orig_v = tf.Variable(initial_value=dist_orig)
+vinit = tf.variables_initializer([dists_orig_v])
+sess.run(vinit)
+costs = tf.reduce_sum(tf.pow(tf.subtract(dists_orig_v, dists), 2), axis=[0,1])
+sess.run(costs, feed_dict={pts: embedded_pts})
+
+gr = tf.gradients(costs, [pts])
+sess.run(gr, feed_dict={pts: embedded_pts})
+
+
+x = tf.constant([1, 2, 3])
+y = tf.constant([2, 2, 3])
+z = tf.multiply(x, y)
+z.eval(session=sess)
